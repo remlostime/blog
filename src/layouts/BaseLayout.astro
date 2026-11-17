@@ -1,0 +1,30 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import type { Props as HeadProps } from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+
+type Props = HeadProps;
+
+const head = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<BaseHead {...head} />
+	</head>
+	<body>
+		<a class="skip-link" href="#main">Skip to content</a>
+		<Header />
+		<main id="main" class="wrap">
+			<slot />
+		</main>
+		<Footer />
+	</body>
+</html>
+<style>
+	main {
+		padding-block: calc(var(--grid) * 3) calc(var(--grid) * 5);
+	}
+</style>

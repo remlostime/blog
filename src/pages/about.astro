@@ -1,15 +1,31 @@
 ---
-import AboutHeroImage from '../assets/blog-placeholder-about.jpg';
-import Layout from '../layouts/BlogPost.astro';
+import { SOCIAL_LINKS, TOPICS } from '../consts';
+import Page from '../layouts/Page.astro';
+import { topicUrl } from '../lib/entries';
+
+const github = SOCIAL_LINKS.find((link) => link.label === 'GitHub');
 ---
 
-<Layout
-	title="About Me"
-	description="self introduction"
-	pubDate={new Date('Jan 13, 2026')}
-	heroImage={AboutHeroImage}
->
+<Page title="About" description="Kai Chen is an iOS engineer in the San Francisco Bay Area.">
+	<p>I'm Kai Chen, an iOS engineer in the San Francisco Bay Area.</p>
 	<p>
-		I am an iOS enginner in San Francisco Bay Area. I like talking about iOS tech, investing and thinking.
+		This site is my decision log. I write down what I believe and why before I know how it turns
+		out, so I can come back later and check what held up. I mostly write about three things:
 	</p>
-</Layout>
+	<ul>
+		{
+			TOPICS.map((topic) => (
+				<li>
+					<a href={topicUrl(topic.slug)}>{topic.label}</a>: {topic.summary}
+				</li>
+			))
+		}
+	</ul>
+	{
+		github && (
+			<p>
+				You can also find my code on <a href={github.href}>GitHub</a>.
+			</p>
+		)
+	}
+</Page>

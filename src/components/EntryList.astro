@@ -1,0 +1,111 @@
+---
+import { getTopic } from '../consts';
+import { type Entry, entryUrl, formatEntryNumber, topicUrl } from '../lib/entries';
+import FormattedDate from './FormattedDate.astro';
+
+interface Props {
+	entries: Entry[];
+	/** Hide the topic column, e.g. on a topic page where every row shares it. */
+	showTopic?: boolean;
+}
+
+const { entries, showTopic = true } = Astro.props;
+---
+
+<ol class:list={['entry-list', { 'without-topic': !showTopic }]} role="list">
+	{
+		entries.map(({ post, number }) => {
+			const topic = getTopic(post.data.topic);
+			return (
+				<li class="entry-row">
+					<span class="entry-number">
+						<span class="sr-only">Entry </span>
+						{number ? formatEntryNumber(number) : 'Draft'}
+					</span>
+					<FormattedDate class="entry-date" date={post.data.pubDate} />
+					<a class="entry-title" href={entryUrl(post)}>
+						{post.data.title}
+					</a>
+					{showTopic && (
+						<a class="entry-topic" href={topicUrl(topic.slug)}>
+							{topic.label}
+						</a>
+					)}
+				</li>
+			);
+		})
+	}
+</ol>
+<style>
+	/* Ledger rows: number, date, title, topic. */
+	.entry-list {
+		margin: 0;
+		padding: 0;
+		list-style: none;
+		border-top: 1px solid var(--rule);
+		font-family: var(--font-lettering);
+	}
+	.entry-row {
+		display: grid;
+		grid-template-columns: 2.75rem 6.75rem minmax(0, 1fr) auto;
+		grid-template-areas: 'number date title topic';
+		align-items: baseline;
+		column-gap: 1.25rem;
+		padding-block: 1.05rem;
+		background-color: var(--pad);
+		border-bottom: 1px solid var(--rule);
+	}
+	.without-topic .entry-row {
+		grid-template-columns: 2.75rem 6.75rem minmax(0, 1fr);
+		grid-template-areas: 'number date title';
+	}
+	.entry-number,
+	.entry-row :global(.entry-date),
+	.entry-topic {
+		color: var(--graphite);
+		font-size: var(--text-base);
+		font-variant-numeric: tabular-nums;
+		font-weight: 500;
+	}
+	.entry-number {
+		grid-area: number;
+	}
+	.entry-row :global(.entry-date) {
+		grid-area: date;
+	}
+	.entry-title {
+		grid-area: title;
+		color: var(--ink);
+		font-size: var(--text-lead);
+		font-weight: 600;
+		line-height: 1.2;
+		text-decoration: none;
+		text-wrap: pretty;
+	}
+	.entry-title:hover {
+		color: var(--royal-ink);
+		text-decoration: underline 2px;
+		text-underline-offset: 0.2em;
+	}
+	.entry-topic {
+		grid-area: topic;
+		justify-self: end;
+		text-decoration: none;
+	}
+	.entry-topic:hover {
+		color: var(--ink);
+		text-decoration: underline 1px var(--graphite);
+		text-underline-offset: 0.35em;
+	}
+	@media (max-width: 40rem) {
+		.entry-row,
+		.without-topic .entry-row {
+			grid-template-columns: auto auto minmax(0, 1fr);
+			grid-template-areas:
+				'number date topic'
+				'title title title';
+			row-gap: 0.35rem;
+			column-gap: 1rem;
+		}
+	}
+</style>

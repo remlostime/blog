@@ -1,0 +1,40 @@
+/*
+  Design tokens: "the green pad".
+  The site is styled after engineering computation paper, the pale-green grid pad
+  engineers and accountants both use. Its grid is printed on the back and ghosts through.
+*/
+
+:root {
+	/* Color */
+	--pad: #f2f5ed; /* page ground */
+	--rule: #ccd8c2; /* grid, row rules */
+	--ink: #1e2a44; /* text and headings; blue-black pen ink */
+	--royal-ink: #24479a; /* links and focus */
+	--red-pencil: #b0281c; /* annotations only: active nav, "Updated" dates */
+	--graphite: #566352; /* meta text, form labels, printed form lines */
+
+	--grid-line: rgb(204 216 194 / 0.42);
+	--code-tint: rgb(204 216 194 / 0.55);
+
+	/* Type */
+	--font-lettering:
+		'Barlow Semi Condensed', 'PingFang SC', 'Noto Sans SC', 'Helvetica Neue', Arial, sans-serif;
+	--font-text: 'Literata Variable', 'Noto Serif SC', 'Songti SC', Georgia, serif;
+	--font-code: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+
+	/* Scale (Bringhurst's classic sequence) */
+	--text-sm: 0.875rem; /* 14 */
+	--text-base: 1rem; /* 16 */
+	--text-body: 1.125rem; /* 18 */
+	--text-lead: 1.3125rem; /* 21 */
+	--text-lg: 1.5rem; /* 24 */
+	--text-xl: 1.875rem; /* 30 */
+	--text-2xl: clamp(2.25rem, 1.6rem + 2.6vw, 3rem); /* 36 → 48 */
+	--text-3xl: clamp(2.25rem, 1.1rem + 4.6vw, 3.75rem); /* 36 → 60 */
+
+	/* Layout */
+	--grid: 20px; /* about 5 squares per inch, kept to whole pixels so lines render crisply */
+	--page: 48rem;
+	--measure: 34em; /* about 66 characters of body text */
+	--gutter: clamp(1.25rem, 4vw, 2.5rem);
+}
