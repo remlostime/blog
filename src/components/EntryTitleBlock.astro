@@ -1,0 +1,100 @@
+---
+import { getTopic } from '../consts';
+import { type Entry, formatEntryNumber, topicUrl } from '../lib/entries';
+import FormattedDate from './FormattedDate.astro';
+
+interface Props {
+	entry: Entry;
+}
+
+const { entry } = Astro.props;
+const { title, pubDate, updatedDate } = entry.post.data;
+const topic = getTopic(entry.post.data.topic);
+---
+
+<!-- Modeled on the printed title block at the top of a computation pad sheet. -->
+<header class="title-block">
+	<dl class="fields">
+		<div class="field">
+			<dt>Entry</dt>
+			<dd>{entry.number ? formatEntryNumber(entry.number) : 'Draft'}</dd>
+		</div>
+		<div class="field">
+			<dt>Topic</dt>
+			<dd><a href={topicUrl(topic.slug)}>{topic.label}</a></dd>
+		</div>
+		<div class="field">
+			<dt>Date</dt>
+			<dd><FormattedDate date={pubDate} /></dd>
+		</div>
+		{
+			updatedDate && (
+				<div class="field updated">
+					<dt>Updated</dt>
+					<dd>
+						<FormattedDate date={updatedDate} />
+					</dd>
+				</div>
+			)
+		}
+	</dl>
+	<h1>{title}</h1>
+</header>
+<style>
+	.title-block {
+		background-color: var(--pad);
+		border: 1px solid var(--graphite);
+		font-family: var(--font-lettering);
+	}
+	.fields {
+		display: grid;
+		grid-auto-columns: 1fr;
+		grid-auto-flow: column;
+		gap: 1px;
+		margin: 0;
+		background-color: var(--graphite);
+		border-bottom: 1px solid var(--graphite);
+	}
+	.field {
+		padding: 0.45rem 0.85rem 0.55rem;
+		background-color: var(--pad);
+	}
+	dt {
+		color: var(--graphite);
+		font-size: var(--text-sm);
+		font-weight: 500;
+		line-height: 1.3;
+	}
+	dd {
+		margin: 0;
+		font-size: var(--text-body);
+		font-variant-numeric: tabular-nums;
+		font-weight: 600;
+		line-height: 1.4;
+	}
+	dd a {
+		color: var(--ink);
+		text-decoration-color: var(--graphite);
+	}
+	dd a:hover {
+		color: var(--royal-ink);
+		text-decoration-color: currentColor;
+	}
+	.updated dd {
+		color: var(--red-pencil);
+	}
+	h1 {
+		padding: 1.1rem 0.85rem 1.3rem;
+		font-size: var(--text-2xl);
+		line-height: 1.05;
+	}
+	@media (max-width: 34rem) {
+		.fields {
+			grid-template-columns: 1fr 1fr;
+			grid-auto-flow: row;
+		}
+		.field:last-child:nth-child(odd) {
+			grid-column: 1 / -1;
+		}
+	}
+</style>

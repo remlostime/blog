@@ -4,21 +4,32 @@ import type { HTMLAttributes } from 'astro/types';
 type Props = HTMLAttributes<'a'>;
 
 const { href, class: className, ...props } = Astro.props;
-const pathname = Astro.url.pathname.replace(import.meta.env.BASE_URL, '');
-const subpath = pathname.match(/[^\/]+/g);
-const isActive = href === pathname || href === '/' + (subpath?.[0] || '');
+
+const withoutTrailingSlash = (path: string) => path.replace(/\/+$/, '') || '/';
+const currentPath = withoutTrailingSlash(Astro.url.pathname);
+const targetPath = withoutTrailingSlash(String(href));
+
+// "Entries" stays active on every entry page under /blog/.
+const isCurrentPage = currentPath === targetPath;
+const isActive = isCurrentPage || (targetPath !== '/' && currentPath.startsWith(`${targetPath}/`));
+const ariaCurrent = isCurrentPage ? 'page' : isActive ? 'true' : undefined;
 ---
 
-<a href={href} class:list={[className, { active: isActive }]} {...props}>
+<a href={href} class:list={[className, { active: isActive }]} aria-current={ariaCurrent} {...props}>
 	<slot />
 </a>
 <style>
 	a {
 		display: inline-block;
+		color: var(--ink);
 		text-decoration: none;
 	}
+	a:hover {
+		text-decoration: underline 1px var(--graphite);
+		text-underline-offset: 0.35em;
+	}
 	a.active {
-		font-weight: bolder;
-		text-decoration: underline;
+		text-decoration: underline 2px var(--red-pencil);
+		text-underline-offset: 0.35em;
 	}
 </style>

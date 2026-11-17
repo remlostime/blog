@@ -1,62 +1,78 @@
-# Astro Starter Kit: Blog
+# chenkai.blog
 
-```sh
-npm create astro@latest -- --template blog
+Kai Chen's decision log on engineering, investing, and thinking. Built with [Astro](https://astro.build).
+It is live at <https://www.chenkai.blog>.
+
+## Commands
+
+| Command           | Action                                       |
+| :---------------- | :------------------------------------------- |
+| `npm install`     | Install dependencies                         |
+| `npm run dev`     | Start the dev server at `localhost:4321`     |
+| `npm run build`   | Build the production site to `./dist/`       |
+| `npm run preview` | Preview the production build locally         |
+
+## Adding an entry
+
+Create a Markdown or MDX file in `src/content/blog/`. The file name becomes the URL: `/blog/<file-name>/`.
+
+```yaml
+---
+title: 'What the title says'
+description: 'One sentence for the entry list, RSS, and link previews.'
+topic: engineering # engineering | investing | thinking
+pubDate: 'Feb 2 2026'
+updatedDate: 'Mar 1 2026' # optional; shown in red pencil in the title block
+heroImage: '../../assets/your-image.png' # optional; also used as the link-preview image
+draft: true # optional; shows in `npm run dev`, hidden from the build and RSS
+---
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+Entry numbers (001, 002, …) are assigned by publish date among published entries. Nothing is stored in the file.
+`src/content/blog/markdown-style-guide.md` is a permanent draft for checking typography in dev.
 
-Features:
-
-- ✅ Minimal styling (make it your own!)
-- ✅ 100/100 Lighthouse performance
-- ✅ SEO-friendly with canonical URLs and OpenGraph data
-- ✅ Sitemap support
-- ✅ RSS Feed support
-- ✅ Markdown & MDX support
-
-## 🚀 Project Structure
-
-Inside of your Astro project, you'll see the following folders and files:
+## Structure
 
 ```text
-├── public/
-├── src/
-│   ├── components/
-│   ├── content/
-│   ├── layouts/
-│   └── pages/
-├── astro.config.mjs
-├── README.md
-├── package.json
-└── tsconfig.json
+src/
+├── consts.ts             Site info, social links, and the topic list
+├── content.config.ts     Frontmatter schema for entries
+├── lib/entries.ts        Draft filtering, ordering, numbering, prev/next, URLs
+├── layouts/
+│   ├── BaseLayout.astro  html/head/header/footer shell
+│   ├── BlogPost.astro    Entry page: title block, hero, body, pager
+│   └── Page.astro        Plain page (About)
+├── components/           Header, Footer, EntryList, EntryTitleBlock, EntryPager, TopicNav, …
+├── pages/
+│   ├── index.astro       Intro + latest entries
+│   ├── blog/             All entries by year, and each entry page
+│   ├── topics/[topic]    One page per topic
+│   ├── about.astro
+│   └── rss.xml.js
+└── styles/
+    ├── tokens.css        Colors, type, scale, grid
+    └── global.css        Base styles and `.prose`
 ```
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+All pages and the RSS feed read entries through `src/lib/entries.ts`. Add new listing logic there.
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+## Design
 
-The `src/content/` directory contains "collections" of related Markdown and MDX documents. Use `getCollection()` to retrieve posts from `src/content/blog/`, and type-check your frontmatter using an optional schema. See [Astro's Content Collections docs](https://docs.astro.build/en/guides/content-collections/) to learn more.
+The design follows engineering computation paper, the pale-green grid pad. The grid ghosts through faintly, the
+way it does on a real pad. The printed parts of a sheet are solid paper: the header band, entry title blocks, and ledger rows.
+The grid shows only where you'd write by hand.
 
-Any static assets, like images, can be placed in the `public/` directory.
+| Token          | Value     | Use                                         |
+| :------------- | :-------- | :------------------------------------------ |
+| `--pad`        | `#f2f5ed` | Page ground                                 |
+| `--rule`       | `#ccd8c2` | Grid and row rules                          |
+| `--ink`        | `#1e2a44` | Text and headings                           |
+| `--royal-ink`  | `#24479a` | Links and focus ring                        |
+| `--red-pencil` | `#b0281c` | Annotations only: active nav, updated dates |
+| `--graphite`   | `#566352` | Meta text, labels, title-block lines        |
 
-## 🧞 Commands
+- **Barlow Semi Condensed** (500, 600): headings, navigation, entry numbers, and labels.
+- **Literata** (variable, with italics): body text at 18px with 1.7 line height and a 34em measure.
 
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Check out [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
-
-## Credit
-
-This theme is based off of the lovely [Bear Blog](https://github.com/HermanMartinus/bearblog/).
+Type sizes follow Bringhurst's scale: 14, 16, 18, 21, 24, 30, 36, 48, 60.
+Keep labels in sentence case, and keep red pencil for annotations.

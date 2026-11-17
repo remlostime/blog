@@ -1,0 +1,81 @@
+---
+import type { AdjacentEntries } from '../lib/entries';
+import { entryUrl } from '../lib/entries';
+
+type Props = AdjacentEntries;
+
+const { previous, next } = Astro.props;
+---
+
+<nav class="pager" aria-label="More entries">
+	{
+		previous && (
+			<a class="pager-link previous" href={entryUrl(previous.post)} rel="prev">
+				<span class="pager-label">Previous entry</span>
+				<span class="pager-title">{previous.post.data.title}</span>
+			</a>
+		)
+	}
+	{
+		next && (
+			<a class="pager-link next" href={entryUrl(next.post)} rel="next">
+				<span class="pager-label">Next entry</span>
+				<span class="pager-title">{next.post.data.title}</span>
+			</a>
+		)
+	}
+	{
+		!previous && !next && (
+			<a class="pager-link" href="/blog/">
+				<span class="pager-title">See all entries</span>
+			</a>
+		)
+	}
+</nav>
+<style>
+	.pager {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 1.5rem;
+		margin-top: calc(var(--grid) * 3);
+		padding-top: 1.25rem;
+		border-top: 1px solid var(--rule);
+		font-family: var(--font-lettering);
+	}
+	.pager-link {
+		display: grid;
+		gap: 0.2rem;
+		align-content: start;
+		color: var(--ink);
+		text-decoration: none;
+	}
+	.next {
+		grid-column: 2;
+		text-align: right;
+	}
+	.pager-label {
+		color: var(--graphite);
+		font-size: var(--text-sm);
+		font-weight: 500;
+	}
+	.pager-title {
+		font-size: var(--text-lead);
+		font-weight: 600;
+		line-height: 1.2;
+		text-wrap: balance;
+	}
+	.pager-link:hover .pager-title {
+		color: var(--royal-ink);
+		text-decoration: underline 2px;
+		text-underline-offset: 0.2em;
+	}
+	@media (max-width: 34rem) {
+		.pager {
+			grid-template-columns: 1fr;
+		}
+		.next {
+			grid-column: auto;
+			text-align: left;
+		}
+	}
+</style>

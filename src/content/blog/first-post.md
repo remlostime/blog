@@ -1,6 +1,7 @@
 ---
 title: 'Why I still write a blog in 2026?'
 description: 'About iOS tech, investing and thinking in long run.'
+topic: thinking
 pubDate: 'Jan 13 2026'
 heroImage: '../../assets/first-blog.PNG'
 ---
