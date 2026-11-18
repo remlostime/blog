@@ -36,7 +36,7 @@ export const TOPICS = [
 	{
 		slug: 'engineering',
 		label: 'Engineering',
-		summary: 'Systems, architecture, and the cost of technical decisions.',
+		summary: 'iOS, architecture, building with AI agents, and the cost of technical decisions.',
 	},
 	{
 		slug: 'investing',
