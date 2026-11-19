@@ -1,0 +1,31 @@
+---
+import { getLocale, type Locale } from '../lib/i18n';
+import { ui } from '../lib/ui';
+
+interface Props {
+	/** Language of the linked entry. The tag renders only when it differs from the page's language. */
+	locale: Locale;
+}
+
+const { locale } = Astro.props;
+const pageLocale = getLocale(Astro.currentLocale);
+---
+
+{locale !== pageLocale && <span class="language-tag">{ui(pageLocale).languageNames[locale]}</span>}
+<style>
+	/* A small printed stamp after a title written in the other language. */
+	.language-tag {
+		display: inline-block;
+		margin-left: 0.5em;
+		padding: 0 0.4em;
+		border: 1px solid var(--rule);
+		border-radius: 2px;
+		color: var(--graphite);
+		font-family: var(--font-lettering);
+		font-size: var(--text-sm);
+		font-weight: 500;
+		line-height: 1.5;
+		vertical-align: 0.15em;
+		white-space: nowrap;
+	}
+</style>

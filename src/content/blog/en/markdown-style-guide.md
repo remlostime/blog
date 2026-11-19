@@ -40,7 +40,7 @@ Itatur? Quiatae cullecum rem ent aut odis in re eossequodi nonsequ idebis ne sap
 
 ### Output
 
-![Desk with a notebook and laptop at sunset](../../assets/first-blog.PNG)
+![Desk with a notebook and laptop at sunset](../../../assets/first-blog.PNG)
 
 ## Blockquotes
 

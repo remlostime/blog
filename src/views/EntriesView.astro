@@ -1,0 +1,37 @@
+---
+import EntryList from '../components/EntryList.astro';
+import PageHeader from '../components/PageHeader.astro';
+import TopicNav from '../components/TopicNav.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getEntries, groupEntriesByYear } from '../lib/entries';
+import { getLocale } from '../lib/i18n';
+import { ui } from '../lib/ui';
+
+const locale = getLocale(Astro.currentLocale);
+const t = ui(locale);
+const years = groupEntriesByYear(await getEntries(locale));
+---
+
+<BaseLayout title={t.entries.title} description={t.entries.description}>
+	<PageHeader title={t.entries.title} lede={t.entries.lede}>
+		<TopicNav />
+	</PageHeader>
+	{
+		years.map(({ year, entries }) => (
+			<section class="year" aria-labelledby={`year-${year}`}>
+				<h2 id={`year-${year}`}>{year}</h2>
+				<EntryList entries={entries} />
+			</section>
+		))
+	}
+</BaseLayout>
+<style>
+	.year + .year {
+		margin-top: calc(var(--grid) * 3);
+	}
+	h2 {
+		margin-bottom: 0.75rem;
+		font-size: var(--text-lg);
+		font-variant-numeric: tabular-nums;
+	}
+</style>

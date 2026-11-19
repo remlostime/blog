@@ -1,0 +1,72 @@
+---
+import EntryList from '../components/EntryList.astro';
+import TopicNav from '../components/TopicNav.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { entriesUrl, getEntries } from '../lib/entries';
+import { getLocale } from '../lib/i18n';
+import { ui } from '../lib/ui';
+
+const LATEST_COUNT = 5;
+
+const locale = getLocale(Astro.currentLocale);
+const t = ui(locale);
+const entries = await getEntries(locale);
+const latest = entries.slice(0, LATEST_COUNT);
+---
+
+<BaseLayout>
+	<section class="intro" aria-labelledby="intro-title">
+		<h1 id="intro-title">{t.home.title}</h1>
+		<p class="lede">{t.home.lede}</p>
+	</section>
+
+	<section class="latest" aria-labelledby="latest-title">
+		<div class="section-head">
+			<h2 id="latest-title">{t.home.latest}</h2>
+			<TopicNav />
+		</div>
+		<EntryList entries={latest} />
+		{entries.length > LATEST_COUNT && <a class="all-entries" href={entriesUrl(locale)}>{t.home.all}</a>}
+	</section>
+</BaseLayout>
+<style>
+	.intro {
+		padding-block: calc(var(--grid) * 1) calc(var(--grid) * 4);
+	}
+	h1 {
+		max-width: 13em;
+		font-size: var(--text-3xl);
+		line-height: 1.02;
+		letter-spacing: -0.01em;
+	}
+	/* CJK glyphs fill the em box, so the tight Latin leading would make lines touch. */
+	h1:lang(zh) {
+		max-width: 14em;
+		line-height: 1.2;
+		letter-spacing: 0;
+	}
+	.lede {
+		max-width: 30em;
+		margin-top: calc(var(--grid) * 1.5);
+		font-size: var(--text-lead);
+		line-height: 1.55;
+	}
+	.section-head {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: baseline;
+		justify-content: space-between;
+		gap: 0.5rem 1.5rem;
+		margin-bottom: 0.75rem;
+	}
+	h2 {
+		font-size: var(--text-lg);
+	}
+	.all-entries {
+		display: inline-block;
+		margin-top: 1.25rem;
+		font-family: var(--font-lettering);
+		font-size: var(--text-body);
+		font-weight: 600;
+	}
+</style>

@@ -3,20 +3,26 @@ import BaseHead from '../components/BaseHead.astro';
 import type { Props as HeadProps } from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
+import { type Alternates, getLocale, LOCALE_META, pageAlternates } from '../lib/i18n';
+import { ui } from '../lib/ui';
 
-type Props = HeadProps;
+type Props = Omit<HeadProps, 'alternates'> & {
+	/** This page in each locale. Defaults to every locale at the same path, which holds for all pages but entries. */
+	alternates?: Alternates;
+};
 
-const head = Astro.props;
+const { alternates = pageAlternates(Astro.url.pathname), ...head } = Astro.props;
+const locale = getLocale(Astro.currentLocale);
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang={LOCALE_META[locale].htmlLang}>
 	<head>
-		<BaseHead {...head} />
+		<BaseHead {...head} alternates={alternates} />
 	</head>
 	<body>
-		<a class="skip-link" href="#main">Skip to content</a>
-		<Header />
+		<a class="skip-link" href="#main">{ui(locale).skipLink}</a>
+		<Header alternates={alternates} />
 		<main id="main" class="wrap">
 			<slot />
 		</main>
