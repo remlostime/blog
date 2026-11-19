@@ -1,15 +1,40 @@
 ---
 import { SITE } from '../consts';
+import { entriesUrl } from '../lib/entries';
+import { aboutUrl, type Alternates, feedUrl, getLocale, homeUrl, LOCALE_META, otherLocales } from '../lib/i18n';
+import { ui } from '../lib/ui';
 import HeaderLink from './HeaderLink.astro';
+
+interface Props {
+	/** This page in each locale it exists in. The language switch falls back to that locale's entry list. */
+	alternates: Alternates;
+}
+
+const { alternates } = Astro.props;
+const locale = getLocale(Astro.currentLocale);
+const t = ui(locale);
+const switches = otherLocales(locale).map((target) => ({
+	href: alternates[target] ?? entriesUrl(target),
+	...LOCALE_META[target],
+}));
 ---
 
 <header class="site-header">
-	<nav class="wrap" aria-label="Main">
-		<a class="wordmark" href="/">{SITE.title}</a>
+	<nav class="wrap" aria-label={t.nav.label}>
+		<a class="wordmark" href={homeUrl(locale)} lang="en">{SITE.title}</a>
 		<ul class="nav-links" role="list">
-			<li><HeaderLink href="/blog">Entries</HeaderLink></li>
-			<li><HeaderLink href="/about">About</HeaderLink></li>
-			<li><HeaderLink href="/rss.xml">RSS</HeaderLink></li>
+			<li><HeaderLink href={entriesUrl(locale)}>{t.nav.entries}</HeaderLink></li>
+			<li><HeaderLink href={aboutUrl(locale)}>{t.nav.about}</HeaderLink></li>
+			<li><HeaderLink href={feedUrl(locale)}>{t.nav.rss}</HeaderLink></li>
+			{
+				switches.map((target) => (
+					<li class="language-switch">
+						<a href={target.href} lang={target.htmlLang} hreflang={target.htmlLang}>
+							{target.endonym}
+						</a>
+					</li>
+				))
+			}
 		</ul>
 	</nav>
 </header>
@@ -43,9 +68,25 @@ import HeaderLink from './HeaderLink.astro';
 		font-size: var(--text-body);
 		font-weight: 500;
 	}
+	/* The switch changes the language, not the section, so a rule sets it apart from the nav. */
+	.language-switch {
+		padding-left: 1.5rem;
+		border-left: 1px solid var(--rule);
+	}
+	.language-switch a {
+		color: var(--ink);
+		text-decoration: none;
+	}
+	.language-switch a:hover {
+		text-decoration: underline 1px var(--graphite);
+		text-underline-offset: 0.35em;
+	}
 	@media (max-width: 26rem) {
 		.nav-links {
 			gap: 1.1rem;
+		}
+		.language-switch {
+			padding-left: 1.1rem;
 		}
 	}
 </style>

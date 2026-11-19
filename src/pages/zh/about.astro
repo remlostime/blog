@@ -1,0 +1,15 @@
+---
+import { getSocialLink } from '../../consts';
+import AboutView from '../../views/AboutView.astro';
+
+const github = getSocialLink('github');
+---
+
+<AboutView>
+	<p>我是 Kai Chen，在旧金山湾区做 iOS 工程师。我做了 13 年 iOS 开发，待过 Facebook、Airbnb 和 Pinterest。</p>
+	<p>最近我最感兴趣的是：AI 智能体会怎样改变大型 App 的开发方式，以及怎样验证它们写出来的东西。</p>
+	<p>
+		这个网站是我的决策日志。在知道结果之前，我先写下自己相信什么、为什么相信，过一段时间再回来，看哪些判断站住了。我主要写三类内容：
+	</p>
+	<p slot="after">我的代码也放在 <a href={github.href}>GitHub</a> 上。</p>
+</AboutView>

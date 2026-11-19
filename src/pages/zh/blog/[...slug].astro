@@ -1,0 +1,18 @@
+---
+import { render } from 'astro:content';
+import BlogPost from '../../../layouts/BlogPost.astro';
+import { type EntryPageProps, getEntryPaths } from '../../../lib/entries';
+
+export async function getStaticPaths() {
+	return getEntryPaths('zh');
+}
+
+type Props = EntryPageProps;
+
+const { entry, previous, next } = Astro.props;
+const { Content } = await render(entry.post);
+---
+
+<BlogPost entry={entry} previous={previous} next={next}>
+	<Content />
+</BlogPost>

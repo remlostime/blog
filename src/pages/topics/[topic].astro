@@ -1,45 +1,8 @@
 ---
-import type { GetStaticPaths } from 'astro';
-import EntryList from '../../components/EntryList.astro';
-import PageHeader from '../../components/PageHeader.astro';
-import TopicNav from '../../components/TopicNav.astro';
-import { TOPICS, type Topic } from '../../consts';
-import BaseLayout from '../../layouts/BaseLayout.astro';
-import { getEntriesByTopic } from '../../lib/entries';
+import { getTopicPaths } from '../../lib/entries';
+import TopicView from '../../views/TopicView.astro';
 
-export const getStaticPaths = (() =>
-	TOPICS.map((topic) => ({ params: { topic: topic.slug }, props: { topic } }))) satisfies GetStaticPaths;
-
-interface Props {
-	topic: Topic;
-}
-
-const { topic } = Astro.props;
-const entries = await getEntriesByTopic(topic.slug);
+export const getStaticPaths = getTopicPaths;
 ---
 
-<BaseLayout title={topic.label} description={topic.summary}>
-	<PageHeader title={topic.label} lede={topic.summary}>
-		<TopicNav current={topic.slug} />
-	</PageHeader>
-	{
-		entries.length > 0 ? (
-			<EntryList entries={entries} showTopic={false} />
-		) : (
-			<p class="empty">
-				Nothing filed under {topic.label} yet. <a href="/blog/">See all entries</a>
-			</p>
-		)
-	}
-</BaseLayout>
-<style>
-	.empty {
-		padding-block: 1.05rem;
-		border-block: 1px solid var(--rule);
-		background-color: var(--pad);
-		color: var(--graphite);
-		font-family: var(--font-lettering);
-		font-size: var(--text-lead);
-		font-weight: 500;
-	}
-</style>
+<TopicView {...Astro.props} />

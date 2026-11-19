@@ -17,9 +17,15 @@
 	--code-tint: rgb(204 216 194 / 0.55);
 
 	/* Type */
+	/* Latin fallbacks come before the CJK faces, so Latin text never borrows a CJK font's Latin glyphs. Chinese
+	   falls through to the first CJK face installed: macOS, then Android and Linux, then Windows. */
 	--font-lettering:
-		'Barlow Semi Condensed', 'PingFang SC', 'Noto Sans SC', 'Helvetica Neue', Arial, sans-serif;
-	--font-text: 'Literata Variable', 'Noto Serif SC', 'Songti SC', Georgia, serif;
+		'Barlow Semi Condensed', 'Helvetica Neue', Arial, 'PingFang SC', 'Hiragino Sans GB', 'Noto Sans SC',
+		'Noto Sans CJK SC', 'Source Han Sans SC', 'Microsoft YaHei', sans-serif;
+	/* Windows has no screen-worthy CJK serif (SimSun is too thin), so it gets YaHei. */
+	--font-text:
+		'Literata Variable', Georgia, 'Noto Serif SC', 'Noto Serif CJK SC', 'Source Han Serif SC', 'Songti SC', 'STSong',
+		'Microsoft YaHei', serif;
 	--font-code: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
 
 	/* Scale (Bringhurst's classic sequence) */
@@ -36,5 +42,6 @@
 	--grid: 20px; /* about 5 squares per inch, kept to whole pixels so lines render crisply */
 	--page: 48rem;
 	--measure: 34em; /* about 66 characters of body text */
+	--measure-cjk: 36em; /* a CJK character is about 1em wide, so about 36 characters a line */
 	--gutter: clamp(1.25rem, 4vw, 2.5rem);
 }

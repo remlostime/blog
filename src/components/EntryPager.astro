@@ -1,33 +1,46 @@
 ---
-import type { AdjacentEntries } from '../lib/entries';
-import { entryUrl } from '../lib/entries';
+import { type AdjacentEntries, type Entry, entriesUrl, entryUrl } from '../lib/entries';
+import { getLocale, LOCALE_META } from '../lib/i18n';
+import { ui } from '../lib/ui';
+import LanguageTag from './LanguageTag.astro';
 
 type Props = AdjacentEntries;
 
 const { previous, next } = Astro.props;
+const locale = getLocale(Astro.currentLocale);
+const t = ui(locale);
+
+/** `lang` for a neighbour written in another language, which links to its original. */
+const foreign = (entry: Entry) => (entry.locale !== locale ? LOCALE_META[entry.locale].htmlLang : undefined);
 ---
 
-<nav class="pager" aria-label="More entries">
+<nav class="pager" aria-label={t.pager.label}>
 	{
 		previous && (
-			<a class="pager-link previous" href={entryUrl(previous.post)} rel="prev">
-				<span class="pager-label">Previous entry</span>
-				<span class="pager-title">{previous.post.data.title}</span>
+			<a class="pager-link previous" href={entryUrl(previous.post)} rel="prev" hreflang={foreign(previous)}>
+				<span class="pager-label">{t.pager.previous}</span>
+				<span class="pager-title">
+					<span lang={foreign(previous)}>{previous.post.data.title}</span>
+					<LanguageTag locale={previous.locale} />
+				</span>
 			</a>
 		)
 	}
 	{
 		next && (
-			<a class="pager-link next" href={entryUrl(next.post)} rel="next">
-				<span class="pager-label">Next entry</span>
-				<span class="pager-title">{next.post.data.title}</span>
+			<a class="pager-link next" href={entryUrl(next.post)} rel="next" hreflang={foreign(next)}>
+				<span class="pager-label">{t.pager.next}</span>
+				<span class="pager-title">
+					<span lang={foreign(next)}>{next.post.data.title}</span>
+					<LanguageTag locale={next.locale} />
+				</span>
 			</a>
 		)
 	}
 	{
 		!previous && !next && (
-			<a class="pager-link" href="/blog/">
-				<span class="pager-title">See all entries</span>
+			<a class="pager-link" href={entriesUrl(locale)}>
+				<span class="pager-title">{t.pager.all}</span>
 			</a>
 		)
 	}
@@ -63,6 +76,10 @@ const { previous, next } = Astro.props;
 		font-weight: 600;
 		line-height: 1.2;
 		text-wrap: balance;
+	}
+	.pager-title:lang(zh),
+	.pager-title:has(:lang(zh)) {
+		line-height: 1.35;
 	}
 	.pager-link:hover .pager-title {
 		color: var(--royal-ink);

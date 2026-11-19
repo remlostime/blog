@@ -7,6 +7,8 @@ import '@fontsource-variable/literata/opsz-italic.css';
 import '../styles/global.css';
 import type { ImageMetadata } from 'astro';
 import { SITE } from '../consts';
+import { type Alternates, feedUrl, getLocale, LOCALE_META, LOCALES } from '../lib/i18n';
+import { ui } from '../lib/ui';
 
 export interface Props {
 	/** Page name. Omit on the home page to use the site title alone. */
@@ -14,13 +16,21 @@ export interface Props {
 	description?: string;
 	image?: ImageMetadata;
 	ogType?: 'website' | 'article';
+	/** This page in each locale it exists in. Drives the canonical URL and `hreflang` links. */
+	alternates: Alternates;
 }
 
-const { title, description = SITE.description, image, ogType = 'website' } = Astro.props;
+const locale = getLocale(Astro.currentLocale);
+const { title, description = SITE.description[locale], image, ogType = 'website', alternates } = Astro.props;
 
+const absolute = (path: string) => new URL(path, Astro.site);
 const pageTitle = title ? `${title} | ${SITE.title}` : SITE.title;
-const canonicalURL = new URL(Astro.url.pathname, Astro.site);
-const imageURL = image ? new URL(image.src, Astro.site) : undefined;
+const canonicalURL = absolute(alternates[locale] ?? Astro.url.pathname);
+const imageURL = image ? absolute(image.src) : undefined;
+// Only pages that exist in more than one language get hreflang links.
+const translated = LOCALES.filter((candidate) => alternates[candidate]);
+const languageLinks = translated.length > 1 ? translated : [];
+const defaultLanguageURL = languageLinks.length > 0 ? absolute(alternates.en ?? alternates[languageLinks[0]]!) : undefined;
 ---
 
 <!-- Global Metadata -->
@@ -29,11 +39,17 @@ const imageURL = image ? new URL(image.src, Astro.site) : undefined;
 <meta name="theme-color" content="#f2f5ed" />
 <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 <link rel="sitemap" href="/sitemap-index.xml" />
-<link rel="alternate" type="application/rss+xml" title={SITE.title} href={new URL('rss.xml', Astro.site)} />
+<link rel="alternate" type="application/rss+xml" title={ui(locale).feed.title} href={absolute(feedUrl(locale))} />
 <meta name="generator" content={Astro.generator} />
 
-<!-- Canonical URL -->
+<!-- Canonical URL and translations -->
 <link rel="canonical" href={canonicalURL} />
+{
+	languageLinks.map((candidate) => (
+		<link rel="alternate" hreflang={LOCALE_META[candidate].htmlLang} href={absolute(alternates[candidate]!)} />
+	))
+}
+{defaultLanguageURL && <link rel="alternate" hreflang="x-default" href={defaultLanguageURL} />}
 
 <!-- Primary Meta Tags -->
 <title>{pageTitle}</title>
@@ -44,6 +60,12 @@ const imageURL = image ? new URL(image.src, Astro.site) : undefined;
 <!-- Open Graph / Facebook -->
 <meta property="og:type" content={ogType} />
 <meta property="og:site_name" content={SITE.title} />
+<meta property="og:locale" content={LOCALE_META[locale].ogLocale} />
+{
+	languageLinks
+		.filter((candidate) => candidate !== locale)
+		.map((candidate) => <meta property="og:locale:alternate" content={LOCALE_META[candidate].ogLocale} />)
+}
 <meta property="og:url" content={canonicalURL} />
 <meta property="og:title" content={pageTitle} />
 <meta property="og:description" content={description} />

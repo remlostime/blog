@@ -1,21 +1,24 @@
 ---
-import { TOPICS, type TopicSlug } from '../consts';
+import { getTopics, type TopicSlug } from '../consts';
 import { topicUrl } from '../lib/entries';
+import { getLocale } from '../lib/i18n';
+import { ui } from '../lib/ui';
 
 interface Props {
 	current?: TopicSlug;
 }
 
 const { current } = Astro.props;
+const locale = getLocale(Astro.currentLocale);
 ---
 
-<nav class="topic-nav" aria-label="Topics">
+<nav class="topic-nav" aria-label={ui(locale).topics.navLabel}>
 	<ul role="list">
 		{
-			TOPICS.map((topic) => (
+			getTopics(locale).map((topic) => (
 				<li>
 					<a
-						href={topicUrl(topic.slug)}
+						href={topicUrl(locale, topic.slug)}
 						class:list={{ active: topic.slug === current }}
 						aria-current={topic.slug === current ? 'page' : undefined}
 					>

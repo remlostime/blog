@@ -1,17 +1,13 @@
 ---
 import { render } from 'astro:content';
 import BlogPost from '../../layouts/BlogPost.astro';
-import { type AdjacentEntries, type Entry, getAdjacentEntries, getEntries } from '../../lib/entries';
+import { type EntryPageProps, getEntryPaths } from '../../lib/entries';
 
 export async function getStaticPaths() {
-	const entries = await getEntries();
-	return entries.map((entry) => ({
-		params: { slug: entry.post.id },
-		props: { entry, ...getAdjacentEntries(entries, entry.post.id) },
-	}));
+	return getEntryPaths('en');
 }
 
-type Props = AdjacentEntries & { entry: Entry };
+type Props = EntryPageProps;
 
 const { entry, previous, next } = Astro.props;
 const { Content } = await render(entry.post);

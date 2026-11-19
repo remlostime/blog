@@ -1,0 +1,26 @@
+---
+import { getTopics } from '../consts';
+import Page from '../layouts/Page.astro';
+import { topicUrl } from '../lib/entries';
+import { getLocale } from '../lib/i18n';
+import { ui } from '../lib/ui';
+
+// The bio is prose, so each locale's route passes its own paragraphs: the default slot comes before the topic list,
+// the `after` slot follows it.
+const locale = getLocale(Astro.currentLocale);
+const t = ui(locale);
+---
+
+<Page title={t.about.title} description={t.about.description}>
+	<slot />
+	<ul>
+		{
+			getTopics(locale).map((topic) => (
+				<li>
+					<a href={topicUrl(locale, topic.slug)}>{topic.label}</a>{t.about.topicSeparator}{topic.summary}
+				</li>
+			))
+		}
+	</ul>
+	<slot name="after" />
+</Page>

@@ -1,33 +1,5 @@
 ---
-import EntryList from '../../components/EntryList.astro';
-import PageHeader from '../../components/PageHeader.astro';
-import TopicNav from '../../components/TopicNav.astro';
-import BaseLayout from '../../layouts/BaseLayout.astro';
-import { getEntries, groupEntriesByYear } from '../../lib/entries';
-
-const years = groupEntriesByYear(await getEntries());
+import EntriesView from '../../views/EntriesView.astro';
 ---
 
-<BaseLayout title="Entries" description="Every entry in Kai Chen's decision log, newest first.">
-	<PageHeader title="Entries" lede="Everything I've written down, newest first.">
-		<TopicNav />
-	</PageHeader>
-	{
-		years.map(({ year, entries }) => (
-			<section class="year" aria-labelledby={`year-${year}`}>
-				<h2 id={`year-${year}`}>{year}</h2>
-				<EntryList entries={entries} />
-			</section>
-		))
-	}
-</BaseLayout>
-<style>
-	.year + .year {
-		margin-top: calc(var(--grid) * 3);
-	}
-	h2 {
-		margin-bottom: 0.75rem;
-		font-size: var(--text-lg);
-		font-variant-numeric: tabular-nums;
-	}
-</style>
+<EntriesView />

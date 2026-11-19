@@ -1,0 +1,45 @@
+---
+import EntryList from '../components/EntryList.astro';
+import PageHeader from '../components/PageHeader.astro';
+import TopicNav from '../components/TopicNav.astro';
+import { getTopic, type TopicSlug } from '../consts';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { entriesUrl, getEntriesByTopic } from '../lib/entries';
+import { getLocale } from '../lib/i18n';
+import { ui } from '../lib/ui';
+
+interface Props {
+	topic: TopicSlug;
+}
+
+const locale = getLocale(Astro.currentLocale);
+const t = ui(locale);
+const topic = getTopic(Astro.props.topic, locale);
+const entries = await getEntriesByTopic(locale, topic.slug);
+---
+
+<BaseLayout title={topic.label} description={topic.summary}>
+	<PageHeader title={topic.label} lede={topic.summary}>
+		<TopicNav current={topic.slug} />
+	</PageHeader>
+	{
+		entries.length > 0 ? (
+			<EntryList entries={entries} showTopic={false} />
+		) : (
+			<p class="empty">
+				{t.topics.empty(topic.label)} <a href={entriesUrl(locale)}>{t.topics.seeAll}</a>
+			</p>
+		)
+	}
+</BaseLayout>
+<style>
+	.empty {
+		padding-block: 1.05rem;
+		border-block: 1px solid var(--rule);
+		background-color: var(--pad);
+		color: var(--graphite);
+		font-family: var(--font-lettering);
+		font-size: var(--text-lead);
+		font-weight: 500;
+	}
+</style>

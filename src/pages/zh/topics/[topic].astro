@@ -1,0 +1,8 @@
+---
+import { getTopicPaths } from '../../../lib/entries';
+import TopicView from '../../../views/TopicView.astro';
+
+export const getStaticPaths = getTopicPaths;
+---
+
+<TopicView {...Astro.props} />

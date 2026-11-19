@@ -2,18 +2,22 @@
 import { Image } from 'astro:assets';
 import EntryPager from '../components/EntryPager.astro';
 import EntryTitleBlock from '../components/EntryTitleBlock.astro';
-import type { AdjacentEntries, Entry } from '../lib/entries';
+import { entryAlternates, type EntryPageProps } from '../lib/entries';
 import BaseLayout from './BaseLayout.astro';
 
-type Props = AdjacentEntries & {
-	entry: Entry;
-};
+type Props = EntryPageProps;
 
 const { entry, previous, next } = Astro.props;
 const { title, description, heroImage } = entry.post.data;
 ---
 
-<BaseLayout title={title} description={description} image={heroImage} ogType="article">
+<BaseLayout
+	title={title}
+	description={description}
+	image={heroImage}
+	ogType="article"
+	alternates={entryAlternates(entry)}
+>
 	<article>
 		<EntryTitleBlock entry={entry} />
 		{

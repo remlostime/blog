@@ -10,6 +10,14 @@
         "description": {
           "type": "string"
         },
+        "topic": {
+          "type": "string",
+          "enum": [
+            "engineering",
+            "investing",
+            "thinking"
+          ]
+        },
         "pubDate": {
           "anyOf": [
             {
@@ -45,6 +53,10 @@
         "heroImage": {
           "type": "string"
         },
+        "draft": {
+          "type": "boolean",
+          "default": false
+        },
         "$schema": {
           "type": "string"
         }
@@ -52,6 +64,7 @@
       "required": [
         "title",
         "description",
+        "topic",
         "pubDate"
       ],
       "additionalProperties": false

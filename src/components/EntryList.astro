@@ -1,7 +1,10 @@
 ---
 import { getTopic } from '../consts';
 import { type Entry, entryUrl, formatEntryNumber, topicUrl } from '../lib/entries';
+import { getLocale, LOCALE_META } from '../lib/i18n';
+import { ui } from '../lib/ui';
 import FormattedDate from './FormattedDate.astro';
+import LanguageTag from './LanguageTag.astro';
 
 interface Props {
 	entries: Entry[];
@@ -10,24 +13,30 @@ interface Props {
 }
 
 const { entries, showTopic = true } = Astro.props;
+const locale = getLocale(Astro.currentLocale);
+const t = ui(locale);
 ---
 
 <ol class:list={['entry-list', { 'without-topic': !showTopic }]} role="list">
 	{
-		entries.map(({ post, number }) => {
-			const topic = getTopic(post.data.topic);
+		entries.map((entry) => {
+			const { post, number } = entry;
+			const topic = getTopic(post.data.topic, locale);
+			// An entry not yet translated links to its original, so its title is marked with that language.
+			const foreign = entry.locale !== locale ? LOCALE_META[entry.locale].htmlLang : undefined;
 			return (
 				<li class="entry-row">
 					<span class="entry-number">
-						<span class="sr-only">Entry </span>
-						{number ? formatEntryNumber(number) : 'Draft'}
+						<span class="sr-only">{t.entry.label} </span>
+						{number ? formatEntryNumber(number) : t.entry.draft}
 					</span>
 					<FormattedDate class="entry-date" date={post.data.pubDate} />
-					<a class="entry-title" href={entryUrl(post)}>
-						{post.data.title}
+					<a class="entry-title" href={entryUrl(post)} hreflang={foreign}>
+						<span lang={foreign}>{post.data.title}</span>
+						<LanguageTag locale={entry.locale} />
 					</a>
 					{showTopic && (
-						<a class="entry-topic" href={topicUrl(topic.slug)}>
+						<a class="entry-topic" href={topicUrl(locale, topic.slug)}>
 							{topic.label}
 						</a>
 					)}
@@ -39,15 +48,20 @@ const { entries, showTopic = true } = Astro.props;
 <style>
 	/* Ledger rows: number, date, title, topic. */
 	.entry-list {
+		/* Fits "Nov 19, 2026"; Chinese dates (2026年11月19日) need a little more. */
+		--date-column: 6.75rem;
 		margin: 0;
 		padding: 0;
 		list-style: none;
 		border-top: 1px solid var(--rule);
 		font-family: var(--font-lettering);
 	}
+	.entry-list:lang(zh) {
+		--date-column: 7.5rem;
+	}
 	.entry-row {
 		display: grid;
-		grid-template-columns: 2.75rem 6.75rem minmax(0, 1fr) auto;
+		grid-template-columns: 2.75rem var(--date-column) minmax(0, 1fr) auto;
 		grid-template-areas: 'number date title topic';
 		align-items: baseline;
 		column-gap: 1.25rem;
@@ -56,7 +70,7 @@ const { entries, showTopic = true } = Astro.props;
 		border-bottom: 1px solid var(--rule);
 	}
 	.without-topic .entry-row {
-		grid-template-columns: 2.75rem 6.75rem minmax(0, 1fr);
+		grid-template-columns: 2.75rem var(--date-column) minmax(0, 1fr);
 		grid-template-areas: 'number date title';
 	}
 	.entry-number,
@@ -81,6 +95,11 @@ const { entries, showTopic = true } = Astro.props;
 		line-height: 1.2;
 		text-decoration: none;
 		text-wrap: pretty;
+	}
+	/* Two-line Chinese titles need more leading than Latin ones. */
+	.entry-title:lang(zh),
+	.entry-title:has(:lang(zh)) {
+		line-height: 1.35;
 	}
 	.entry-title:hover {
 		color: var(--royal-ink);

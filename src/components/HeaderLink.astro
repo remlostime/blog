@@ -1,5 +1,6 @@
 ---
 import type { HTMLAttributes } from 'astro/types';
+import { LOCALES, localizePath } from '../lib/i18n';
 
 type Props = HTMLAttributes<'a'>;
 
@@ -8,10 +9,11 @@ const { href, class: className, ...props } = Astro.props;
 const withoutTrailingSlash = (path: string) => path.replace(/\/+$/, '') || '/';
 const currentPath = withoutTrailingSlash(Astro.url.pathname);
 const targetPath = withoutTrailingSlash(String(href));
+const homePaths = LOCALES.map((locale) => withoutTrailingSlash(localizePath(locale, '/')));
 
-// "Entries" stays active on every entry page under /blog/.
+// "Entries" stays active on every entry page under /blog/ (or /zh/blog/). A home link is only active on itself.
 const isCurrentPage = currentPath === targetPath;
-const isActive = isCurrentPage || (targetPath !== '/' && currentPath.startsWith(`${targetPath}/`));
+const isActive = isCurrentPage || (!homePaths.includes(targetPath) && currentPath.startsWith(`${targetPath}/`));
 const ariaCurrent = isCurrentPage ? 'page' : isActive ? 'true' : undefined;
 ---
 
